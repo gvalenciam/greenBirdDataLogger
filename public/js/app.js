@@ -1870,9 +1870,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+// import * as d3 from 'd3';
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      graphData: [],
+      idleTimeout: 0,
       tab: null,
       items: [{
         id: 1,
@@ -1883,6 +1892,73 @@ __webpack_require__.r(__webpack_exports__);
       }],
       text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
     };
+  },
+  methods: {
+    refreshGraph: function refreshGraph() {
+      var contThis = this;
+      var margin = {
+        top: 10,
+        right: 30,
+        bottom: 30,
+        left: 30
+      };
+      var width = window.screen.width * 0.5 - margin.left - margin.right;
+      var height = window.screen.height / 2 - margin.top - margin.bottom;
+      var yMin = 0;
+      var yMax = 10;
+      var xMin = 0;
+      var xMax = 10;
+      var svg = d3.select('#csvGraph').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('id', 'maing').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      d3.csv('data/test.csv', function (data) {
+        console.log(data); // Add X axis
+
+        var x = d3.scaleLinear().domain([xMin, xMax]).range([0, width]);
+        var xAxis = svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x)); // Add Y axis
+
+        var y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
+        svg.append('g').call(d3.axisLeft(y)); // Add a clipPath: everything out of this area won't be drawn.
+
+        var clip = svg.append('defs').append('svg:clipPath').attr('id', 'clip').append('svg:rect').attr('width', width).attr('height', height).attr('x', 0).attr('y', 0); // Brushing
+
+        var brush = d3.brushX().extent([[0, 0], [width, height]]).on('end', updateChart);
+        var scatter = svg.append('g').attr('clip-path', 'url(#clip)');
+        scatter.selectAll('circle').data(data).enter().append('circle').attr('cx', function (d) {
+          return x(d.valuex);
+        }).attr('cy', function (d) {
+          return y(d.valuey);
+        }).attr('r', 3).style('fill', '#69b3a2'); // Brushing
+
+        scatter.append('g').attr('class', 'brush').call(brush); // Function idleTimeout null
+
+        var idleTimeout;
+
+        function idled() {
+          idleTimeout = null;
+        } // Update chart for given boundaries
+
+
+        function updateChart() {
+          var extent = d3.event.selection;
+
+          if (!extent) {
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350);
+            x.domain([xMin, xMax]);
+          } else {
+            x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+            scatter.select('.brush').call(brush.move, null);
+          } // Update axis and circles position
+
+
+          xAxis.transition().duration(1000).call(d3.axisBottom(x));
+          scatter.selectAll('circle').transition().duration(1000).attr('cx', function (d) {
+            return x(d.valuex);
+          }).attr('cy', function (d) {
+            return y(d.valuey);
+          });
+        } // Add dots
+
+      });
+    }
   }
 });
 
@@ -19604,7 +19680,35 @@ var render = function() {
                     [
                       _c("v-card-text", {
                         domProps: { textContent: _vm._s(_vm.text) }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          staticClass: "text-none",
+                          attrs: { rounded: "" },
+                          on: { click: _vm.refreshGraph }
+                        },
+                        [_vm._v("Refresh")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-container",
+                        { attrs: { fluid: "" } },
+                        [
+                          _c(
+                            "v-layout",
+                            {
+                              attrs: {
+                                "justify-center": "",
+                                "align-center": ""
+                              }
+                            },
+                            [_c("div", { attrs: { id: "csvGraph" } })]
+                          )
+                        ],
+                        1
+                      )
                     ],
                     1
                   )
@@ -70163,8 +70267,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\lenovo\Desktop\GreenBird\DataLogger\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\lenovo\Desktop\GreenBird\DataLogger\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/gerardo/Desktop/GreenBird/DataLogger/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/gerardo/Desktop/GreenBird/DataLogger/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

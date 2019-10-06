@@ -8,6 +8,9 @@
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 
+        <!-- d3.js -->
+        <script src="https://d3js.org/d3.v4.js"></script>
+
     </head>
 
     <body>
