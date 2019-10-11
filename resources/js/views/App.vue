@@ -23,7 +23,7 @@
         <v-tab-item v-for="item in items" :key="item.id">
           <v-card flat>
             <v-card-text v-text="text"></v-card-text>
-            <v-btn rounded class="text-none" v-on:click="refreshGraph">Refresh</v-btn>
+            <v-btn rounded class="text-none" v-on:click="testServer">Refresh</v-btn>
             <v-container fluid>
               <v-layout justify-center align-center>
                 <div id="csvGraph"></div>
@@ -176,6 +176,18 @@ export default {
 
         // Add dots
       });
+    },
+    testServer: function() {
+      axios('http://localhost:80', {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'text/html; charset=utf-8'
+        },
+        withCredentials: false,
+        credentials: 'same-origin'
+      }).then(response => console.log(response));
     }
   }
 };

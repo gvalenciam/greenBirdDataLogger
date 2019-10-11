@@ -1958,6 +1958,20 @@ __webpack_require__.r(__webpack_exports__);
         } // Add dots
 
       });
+    },
+    testServer: function testServer() {
+      axios('http://localhost:80', {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'text/html; charset=utf-8'
+        },
+        withCredentials: false,
+        credentials: 'same-origin'
+      }).then(function (response) {
+        return console.log(response);
+      });
     }
   }
 });
@@ -19687,7 +19701,7 @@ var render = function() {
                         {
                           staticClass: "text-none",
                           attrs: { rounded: "" },
-                          on: { click: _vm.refreshGraph }
+                          on: { click: _vm.testServer }
                         },
                         [_vm._v("Refresh")]
                       ),
@@ -70267,8 +70281,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/gerardo/Desktop/GreenBird/DataLogger/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/gerardo/Desktop/GreenBird/DataLogger/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\lenovo\Desktop\GreenBird\DataLogger\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\lenovo\Desktop\GreenBird\DataLogger\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
