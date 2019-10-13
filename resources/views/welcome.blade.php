@@ -11,6 +11,12 @@
         <!-- d3.js -->
         <script src="https://d3js.org/d3.v4.js"></script>
 
+        <!-- d3js Color Scale -->
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
     </head>
 
     <body>

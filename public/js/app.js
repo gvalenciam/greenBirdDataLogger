@@ -1829,10 +1829,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/App.vue?vue&type=script&lang=js&":
-/*!*********************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/views/App.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ImagesSection.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ImagesSection.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1860,42 +1860,112 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// import * as d3 from 'd3';
 /* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'ImagesSection',
   data: function data() {
     return {
-      graphData: [],
-      idleTimeout: 0,
-      tab: null,
-      items: [{
-        id: 1,
-        name: 'Señales'
-      }, {
-        id: 2,
-        name: 'Imágenes'
-      }],
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      componentKey: 1
     };
   },
   methods: {
+    refreshImage: function refreshImage() {
+      $('#imageContainer').empty();
+      var node = document.createElement('img');
+      node.src = 'img/baseImage.png';
+      node.id = 'imageSlot';
+      document.getElementById('imageContainer').appendChild(node); //   $('#imageContainer').appendChild(
+      //     '<v-img contain src="img/baseImage.png" id="imageSlot"></v-img>'
+      //   );
+      //   $('#imageSlot').attr('src', 'img/baseImage.png?' + d.getTime());
+      // $('#imageSlot').src = 'img/baseImage.png';
+    },
+    forceRender: function forceRender() {
+      this.componentKey += 1;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SignalSection.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'SignalSection',
+  mounted: function mounted() {
+    this.refreshGraph();
+  },
+  data: function data() {
+    return {
+      graphData: [],
+      selectItems: [{
+        text: '% Agua',
+        value: 'Agua'
+      }, {
+        text: 'P. matricial',
+        value: 'Potencial'
+      }, {
+        text: 'C. eléctrica',
+        value: 'Conductividad'
+      }],
+      csvColumns: [],
+      selectCheckedItems: [],
+      selectKey: 1
+    };
+  },
+  computed: {},
+  methods: {
     refreshGraph: function refreshGraph() {
       var contThis = this;
+      this.forceRender();
+      this.selectCheckedItems = [];
+      $('#csvGraph').empty();
       var margin = {
         top: 10,
         right: 30,
@@ -1903,64 +1973,511 @@ __webpack_require__.r(__webpack_exports__);
         left: 30
       };
       var width = window.screen.width * 0.5 - margin.left - margin.right;
-      var height = window.screen.height / 2 - margin.top - margin.bottom;
+      var height = window.screen.height * 0.6 - margin.top - margin.bottom;
       var yMin = 0;
-      var yMax = 10;
+      var yMax = 20;
       var xMin = 0;
-      var xMax = 10;
+      var xMax = 12;
       var svg = d3.select('#csvGraph').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('id', 'maing').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       d3.csv('data/test.csv', function (data) {
-        console.log(data); // Add X axis
+        var columns = data.columns;
+        columns.shift();
+        contThis.csvColumns = columns;
+        var allGroup = columns;
+        var dataReady = allGroup.map(function (grpName) {
+          return {
+            name: grpName,
+            values: data.map(function (d) {
+              return {
+                time: d.time,
+                value: +d[grpName]
+              };
+            })
+          };
+        });
+        var myColor = d3.scaleOrdinal().domain(allGroup).range(d3.schemeSet2);
+        var x = d3.scaleLinear().domain([0, xMax]).range([0, width]);
+        svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x)); // Add Y axis
 
-        var x = d3.scaleLinear().domain([xMin, xMax]).range([0, width]);
-        var xAxis = svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x)); // Add Y axis
+        var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+        svg.append('g').call(d3.axisLeft(y)); // Add the lines
 
-        var y = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
-        svg.append('g').call(d3.axisLeft(y)); // Add a clipPath: everything out of this area won't be drawn.
+        var line = d3.line().x(function (d) {
+          return x(+d.time);
+        }).y(function (d) {
+          return y(+d.value);
+        });
+        svg.selectAll('myLines').data(dataReady).enter().append('path').attr('class', function (d) {
+          return d.name;
+        }).attr('d', function (d) {
+          return line(d.values);
+        }).attr('stroke', function (d) {
+          return myColor(d.name);
+        }).style('opacity', 0).style('stroke-width', 4).style('fill', 'none'); // Add the points
 
-        var clip = svg.append('defs').append('svg:clipPath').attr('id', 'clip').append('svg:rect').attr('width', width).attr('height', height).attr('x', 0).attr('y', 0); // Brushing
-
-        var brush = d3.brushX().extent([[0, 0], [width, height]]).on('end', updateChart);
-        var scatter = svg.append('g').attr('clip-path', 'url(#clip)');
-        scatter.selectAll('circle').data(data).enter().append('circle').attr('cx', function (d) {
-          return x(d.valuex);
+        svg // First we need to enter in a group
+        .selectAll('myDots').data(dataReady).enter().append('g').style('fill', function (d) {
+          return myColor(d.name);
+        }).attr('class', function (d) {
+          return d.name;
+        }).style('opacity', 0) // Second we need to enter in the 'values' part of this group
+        .selectAll('myPoints').data(function (d) {
+          return d.values;
+        }).enter().append('circle').attr('cx', function (d) {
+          return x(d.time);
         }).attr('cy', function (d) {
-          return y(d.valuey);
-        }).attr('r', 3).style('fill', '#69b3a2'); // Brushing
+          return y(d.value);
+        }).attr('r', 5).attr('stroke', 'white'); // Add a label at the end of each line
 
-        scatter.append('g').attr('class', 'brush').call(brush); // Function idleTimeout null
+        svg.selectAll('myLabels').data(dataReady).enter().append('g').append('text').attr('class', function (d) {
+          return d.name;
+        }).datum(function (d) {
+          return {
+            name: d.name,
+            value: d.values[d.values.length - 1]
+          };
+        }) // keep only the last value of each time series
+        .attr('transform', function (d) {
+          return 'translate(' + x(d.value.time) + ',' + y(d.value.value) + ')';
+        }) // Put the text at the position of the last point
+        .attr('x', 12) // shift the text a bit more right
+        .text(function (d) {
+          return d.name;
+        }).style('fill', function (d) {
+          return myColor(d.name);
+        }).style('font-size', 15).style('opacity', 0); // Add a legend (interactive)
+        //   svg
+        //     .selectAll('myLegend')
+        //     .data(dataReady)
+        //     .enter()
+        //     .append('g')
+        //     .append('text')
+        //     .attr('x', function(d, i) {
+        //       return 30 + i * 60;
+        //     })
+        //     .attr('y', 30)
+        //     .text(function(d) {
+        //       return d.name;
+        //     })
+        //     .style('fill', function(d) {
+        //       return myColor(d.name);
+        //     })
+        //     .style('font-size', 15)
+        //     .on('click', function(d) {
+        //       // is the element currently visible ?
+        //       var currentOpacity = d3.selectAll('.' + d.name).style('opacity');
+        //       // Change the opacity: from 0 to 1 or from 1 to 0
+        //       d3.selectAll('.' + d.name)
+        //         .transition()
+        //         .style('opacity', currentOpacity == 1 ? 0 : 1);
+        //     });
+      }); // var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+      // var width = window.screen.width * 0.5 - margin.left - margin.right;
+      // var height = window.screen.height * 0.6 - margin.top - margin.bottom;
+      // var yMin = 0;
+      // var yMax = 12;
+      // var xMin = 0;
+      // var xMax = 12;
+      // var svg = d3
+      //   .select('#csvGraph')
+      //   .append('svg')
+      //   .attr('width', width + margin.left + margin.right)
+      //   .attr('height', height + margin.top + margin.bottom)
+      //   .append('g')
+      //   .attr('id', 'maing')
+      //   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      // d3.csv('data/test.csv', function(data) {
+      //   console.log(data);
+      //   // Add X axis
+      //   var x = d3
+      //     .scaleLinear()
+      //     .domain([xMin, xMax])
+      //     .range([0, width]);
+      //   var xAxis = svg
+      //     .append('g')
+      //     .attr('transform', 'translate(0,' + height + ')')
+      //     .call(d3.axisBottom(x));
+      //   // Add Y axis
+      //   var y = d3
+      //     .scaleLinear()
+      //     .domain([yMin, yMax])
+      //     .range([height, 0]);
+      //   svg.append('g').call(d3.axisLeft(y));
+      //   // Add a clipPath: everything out of this area won't be drawn.
+      //   var clip = svg
+      //     .append('defs')
+      //     .append('svg:clipPath')
+      //     .attr('id', 'clip')
+      //     .append('svg:rect')
+      //     .attr('width', width)
+      //     .attr('height', height)
+      //     .attr('x', 0)
+      //     .attr('y', 0);
+      //   // Brushing
+      //   var brush = d3
+      //     .brushX()
+      //     .extent([[0, 0], [width, height]])
+      //     .on('end', updateChart);
+      //   var scatter = svg.append('g').attr('clip-path', 'url(#clip)');
+      //   scatter
+      //     .selectAll('circle')
+      //     .data(data)
+      //     .enter()
+      //     .append('circle')
+      //     .attr('cx', function(d) {
+      //       return x(d.valuex);
+      //     })
+      //     .attr('cy', function(d) {
+      //       return y(d.valuey);
+      //     })
+      //     .attr('r', 3)
+      //     .style('fill', '#69b3a2');
+      //   // Brushing
+      //   scatter
+      //     .append('g')
+      //     .attr('class', 'brush')
+      //     .call(brush);
+      //   // Function idleTimeout null
+      //   var idleTimeout;
+      //   function idled() {
+      //     idleTimeout = null;
+      //   }
+      //   // Update chart for given boundaries
+      //   function updateChart() {
+      //     var extent = d3.event.selection;
+      //     if (!extent) {
+      //       if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350));
+      //       x.domain([xMin, xMax]);
+      //     } else {
+      //       x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+      //       scatter.select('.brush').call(brush.move, null);
+      //     }
+      //     // Update axis and circles position
+      //     xAxis
+      //       .transition()
+      //       .duration(1000)
+      //       .call(d3.axisBottom(x));
+      //     scatter
+      //       .selectAll('circle')
+      //       .transition()
+      //       .duration(1000)
+      //       .attr('cx', function(d) {
+      //         return x(d.valuex);
+      //       })
+      //       .attr('cy', function(d) {
+      //         return y(d.valuey);
+      //       });
+      //   }
+      // });
+    },
+    selectGraphUpdate: function selectGraphUpdate(data) {
+      var _this = this;
 
-        var idleTimeout;
-
-        function idled() {
-          idleTimeout = null;
-        } // Update chart for given boundaries
-
-
-        function updateChart() {
-          var extent = d3.event.selection;
-
-          if (!extent) {
-            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350);
-            x.domain([xMin, xMax]);
-          } else {
-            x.domain([x.invert(extent[0]), x.invert(extent[1])]);
-            scatter.select('.brush').call(brush.move, null);
-          } // Update axis and circles position
-
-
-          xAxis.transition().duration(1000).call(d3.axisBottom(x));
-          scatter.selectAll('circle').transition().duration(1000).attr('cx', function (d) {
-            return x(d.valuex);
-          }).attr('cy', function (d) {
-            return y(d.valuey);
-          });
-        } // Add dots
-
+      var difference = data.filter(function (x) {
+        return !_this.selectCheckedItems.includes(x);
       });
+
+      if (difference.length === 0) {
+        difference = this.selectCheckedItems.filter(function (x) {
+          return !data.includes(x);
+        });
+      }
+
+      this.selectCheckedItems = _toConsumableArray(data);
+      var currentOpacity = d3.selectAll('.' + difference[0]).style('opacity'); // Change the opacity: from 0 to 1 or from 1 to 0
+
+      d3.selectAll('.' + difference[0]).transition().style('opacity', currentOpacity == 1 ? 0 : 1);
+    },
+    forceRender: function forceRender() {
+      this.selectKey += 1;
     }
   }
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/App.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/views/App.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _js_components_SignalSection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/js/components/SignalSection */ "./resources/js/components/SignalSection.vue");
+/* harmony import */ var _js_components_ImagesSection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/js/components/ImagesSection */ "./resources/js/components/ImagesSection.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    SignalSection: _js_components_SignalSection__WEBPACK_IMPORTED_MODULE_0__["default"],
+    ImagesSection: _js_components_ImagesSection__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: function data() {
+    return {
+      // graphData: [],
+      idleTimeout: 0,
+      tab: null,
+      items: [{
+        id: 1,
+        name: 'Señales',
+        text: 'Resumen señal registrada'
+      }, {
+        id: 2,
+        name: 'Imágenes',
+        text: 'Imagen registrada'
+      }]
+    };
+  },
+  methods: {// refreshGraph: function() {
+    //   var contThis = this;
+    //   $('#csvGraph').empty();
+    //   var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+    //   var width = window.screen.width * 0.5 - margin.left - margin.right;
+    //   var height = window.screen.height / 2 - margin.top - margin.bottom;
+    //   var yMin = 0;
+    //   var yMax = 12;
+    //   var xMin = 0;
+    //   var xMax = 12;
+    //   var svg = d3
+    //     .select('#csvGraph')
+    //     .append('svg')
+    //     .attr('width', width + margin.left + margin.right)
+    //     .attr('height', height + margin.top + margin.bottom)
+    //     .append('g')
+    //     .attr('id', 'maing')
+    //     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    //   d3.csv('data/test.csv', function(data) {
+    //     console.log(data);
+    //     // Add X axis
+    //     var x = d3
+    //       .scaleLinear()
+    //       .domain([xMin, xMax])
+    //       .range([0, width]);
+    //     var xAxis = svg
+    //       .append('g')
+    //       .attr('transform', 'translate(0,' + height + ')')
+    //       .call(d3.axisBottom(x));
+    //     // Add Y axis
+    //     var y = d3
+    //       .scaleLinear()
+    //       .domain([yMin, yMax])
+    //       .range([height, 0]);
+    //     svg.append('g').call(d3.axisLeft(y));
+    //     // Add a clipPath: everything out of this area won't be drawn.
+    //     var clip = svg
+    //       .append('defs')
+    //       .append('svg:clipPath')
+    //       .attr('id', 'clip')
+    //       .append('svg:rect')
+    //       .attr('width', width)
+    //       .attr('height', height)
+    //       .attr('x', 0)
+    //       .attr('y', 0);
+    //     // Brushing
+    //     var brush = d3
+    //       .brushX()
+    //       .extent([[0, 0], [width, height]])
+    //       .on('end', updateChart);
+    //     var scatter = svg.append('g').attr('clip-path', 'url(#clip)');
+    //     scatter
+    //       .selectAll('circle')
+    //       .data(data)
+    //       .enter()
+    //       .append('circle')
+    //       .attr('cx', function(d) {
+    //         return x(d.valuex);
+    //       })
+    //       .attr('cy', function(d) {
+    //         return y(d.valuey);
+    //       })
+    //       .attr('r', 3)
+    //       .style('fill', '#69b3a2');
+    //     // Brushing
+    //     scatter
+    //       .append('g')
+    //       .attr('class', 'brush')
+    //       .call(brush);
+    //     // Function idleTimeout null
+    //     var idleTimeout;
+    //     function idled() {
+    //       idleTimeout = null;
+    //     }
+    //     // Update chart for given boundaries
+    //     function updateChart() {
+    //       var extent = d3.event.selection;
+    //       if (!extent) {
+    //         if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350));
+    //         x.domain([xMin, xMax]);
+    //       } else {
+    //         x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+    //         scatter.select('.brush').call(brush.move, null);
+    //       }
+    //       // Update axis and circles position
+    //       xAxis
+    //         .transition()
+    //         .duration(1000)
+    //         .call(d3.axisBottom(x));
+    //       scatter
+    //         .selectAll('circle')
+    //         .transition()
+    //         .duration(1000)
+    //         .attr('cx', function(d) {
+    //           return x(d.valuex);
+    //         })
+    //         .attr('cy', function(d) {
+    //           return y(d.valuey);
+    //         });
+    //     }
+    //     // Add dots
+    //   });
+    // }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.sectionContent[data-v-0aa5a042] {\n  display: flex;\n  align-content: center;\n  justify-content: center;\n}\n.csvGraph[data-v-0aa5a042] {\n  width: 50%;\n}\n.selectContainer[data-v-0aa5a042] {\n  width: 20%;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/lib/css-base.js":
+/*!*************************************************!*\
+  !*** ./node_modules/css-loader/lib/css-base.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
 
 /***/ }),
 
@@ -19495,6 +20012,545 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/addStyles.js":
+/*!****************************************************!*\
+  !*** ./node_modules/style-loader/lib/addStyles.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getTarget = function (target, parent) {
+  if (parent){
+    return parent.querySelector(target);
+  }
+  return document.querySelector(target);
+};
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(target, parent) {
+                // If passing function in options, then use it for resolve "head" element.
+                // Useful for Shadow Root style i.e
+                // {
+                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
+                // }
+                if (typeof target === 'function') {
+                        return target();
+                }
+                if (typeof memo[target] === "undefined") {
+			var styleTarget = getTarget.call(this, target, parent);
+			// Special case to return head of iframe instead of iframe itself
+			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[target] = styleTarget;
+		}
+		return memo[target]
+	};
+})();
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(/*! ./urls */ "./node_modules/style-loader/lib/urls.js");
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+        if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertAt.before, target);
+		target.insertBefore(style, nextSibling);
+	} else {
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+
+	if(options.attrs.nonce === undefined) {
+		var nonce = getNonce();
+		if (nonce) {
+			options.attrs.nonce = nonce;
+		}
+	}
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function getNonce() {
+	if (false) {}
+
+	return __webpack_require__.nc;
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = typeof options.transform === 'function'
+		 ? options.transform(obj.css) 
+		 : options.transform.default(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/urls.js":
+/*!***********************************************!*\
+  !*** ./node_modules/style-loader/lib/urls.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/timers-browserify/main.js":
 /*!************************************************!*\
   !*** ./node_modules/timers-browserify/main.js ***!
@@ -19570,6 +20626,145 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "span",
+    { staticStyle: { padding: "16px" } },
+    [
+      _c(
+        "v-btn",
+        {
+          staticClass: "text-none white--text",
+          attrs: { rounded: "", depressed: "", color: "#4D6B87" },
+          on: { click: _vm.forceRender }
+        },
+        [_vm._v("Refrescar")]
+      ),
+      _vm._v(" "),
+      _c(
+        "v-container",
+        [
+          _c(
+            "v-layout",
+            { attrs: { "justify-center": "", "align-center": "" } },
+            [
+              _c("v-img", {
+                key: _vm.componentKey,
+                attrs: {
+                  contain: "",
+                  src: "img/baseImage.png" + "?dummy=" + Math.random(),
+                  id: "imageSlot"
+                }
+              })
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "span",
+    [
+      _c(
+        "v-container",
+        { attrs: { fluid: "" } },
+        [
+          _c("v-layout", { staticClass: "sectionContent py-6" }, [
+            _c("div", {
+              staticClass: "csvGraph ml-12",
+              attrs: { id: "csvGraph" }
+            }),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "selectContainer mr-12",
+                attrs: { id: "selectContainer" }
+              },
+              [
+                _c(
+                  "v-btn",
+                  {
+                    staticClass: "text-none white--text mb-6",
+                    attrs: { rounded: "", depressed: "", color: "#4C759B" },
+                    on: { click: _vm.refreshGraph }
+                  },
+                  [_vm._v("Refrescar")]
+                ),
+                _vm._v(" "),
+                _c("v-select", {
+                  key: _vm.selectKey,
+                  attrs: {
+                    multiple: "",
+                    "small-chips": "",
+                    "deletable-chips": "",
+                    "persistent-hint": "",
+                    label: "Gráfico",
+                    hint: "Seleccione los gráficos a mostrar",
+                    color: "#4C759B",
+                    "item-color": "#4C759B",
+                    items: this.selectItems
+                  },
+                  on: { change: _vm.selectGraphUpdate }
+                })
+              ],
+              1
+            )
+          ])
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/App.vue?vue&type=template&id=91ac6b5c&":
 /*!*************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/views/App.vue?vue&type=template&id=91ac6b5c& ***!
@@ -19590,11 +20785,12 @@ var render = function() {
     [
       _c(
         "v-card",
+        { attrs: { tile: "" } },
         [
           _c(
             "v-toolbar",
             {
-              attrs: { color: "#4D6B87", dark: "", flat: "" },
+              attrs: { color: "#658DB2", dark: "", flat: "", dense: "" },
               scopedSlots: _vm._u([
                 {
                   key: "extension",
@@ -19625,11 +20821,11 @@ var render = function() {
                               [
                                 item.id == 1
                                   ? _c("v-icon", { staticClass: "mx-2" }, [
-                                      _vm._v("mdi-database")
+                                      _vm._v("mdi-chart-bell-curve-cumulative")
                                     ])
                                   : item.id == 2
                                   ? _c("v-icon", { staticClass: "mx-2" }, [
-                                      _vm._v("mdi-chart-bell-curve-cumulative")
+                                      _vm._v("mdi-airplane")
                                     ])
                                   : _vm._e(),
                                 _vm._v(
@@ -19653,7 +20849,12 @@ var render = function() {
             [
               _c("v-app-bar-nav-icon"),
               _vm._v(" "),
-              _c("v-toolbar-title", [_vm._v("Data Logger")])
+              _c("v-toolbar-title", { staticClass: "title text-none" }, [
+                _vm._v("\n        AgBird\n        "),
+                _c("span", { staticClass: "subtitle-1 text-none" }, [
+                  _vm._v("- NeoLink")
+                ])
+              ])
             ],
             1
           ),
@@ -19678,37 +20879,13 @@ var render = function() {
                     "v-card",
                     { attrs: { flat: "" } },
                     [
-                      _c("v-card-text", {
-                        domProps: { textContent: _vm._s(_vm.text) }
-                      }),
+                      _c("v-card-text", { staticClass: "my-3" }, [
+                        _vm._v(_vm._s(item.text))
+                      ]),
                       _vm._v(" "),
-                      _c(
-                        "v-btn",
-                        {
-                          staticClass: "text-none",
-                          attrs: { rounded: "" },
-                          on: { click: _vm.refreshGraph }
-                        },
-                        [_vm._v("Refresh")]
-                      ),
+                      item.id == 1 ? _c("signal-section") : _vm._e(),
                       _vm._v(" "),
-                      _c(
-                        "v-container",
-                        { attrs: { fluid: "" } },
-                        [
-                          _c(
-                            "v-layout",
-                            {
-                              attrs: {
-                                "justify-center": "",
-                                "align-center": ""
-                              }
-                            },
-                            [_c("div", { attrs: { id: "csvGraph" } })]
-                          )
-                        ],
-                        1
-                      )
+                      item.id == 2 ? _c("images-section") : _vm._e()
                     ],
                     1
                   )
@@ -70177,6 +71354,162 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/ImagesSection.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/ImagesSection.vue ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true& */ "./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true&");
+/* harmony import */ var _ImagesSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ImagesSection.vue?vue&type=script&lang=js& */ "./resources/js/components/ImagesSection.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ImagesSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "11fd0a72",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/ImagesSection.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/ImagesSection.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/ImagesSection.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ImagesSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ImagesSection.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ImagesSection.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ImagesSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true& ***!
+  \**********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ImagesSection.vue?vue&type=template&id=11fd0a72&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ImagesSection_vue_vue_type_template_id_11fd0a72_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/SignalSection.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/SignalSection.vue ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true& */ "./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true&");
+/* harmony import */ var _SignalSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SignalSection.vue?vue&type=script&lang=js& */ "./resources/js/components/SignalSection.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& */ "./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _SignalSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "0aa5a042",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/SignalSection.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/SignalSection.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/SignalSection.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./SignalSection.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&":
+/*!************************************************************************************************************!*\
+  !*** ./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& ***!
+  \************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=style&index=0&id=0aa5a042&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_style_index_0_id_0aa5a042_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true& ***!
+  \**********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SignalSection.vue?vue&type=template&id=0aa5a042&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SignalSection_vue_vue_type_template_id_0aa5a042_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 
